@@ -1,6 +1,6 @@
 import src.orm as orm
 import unittest
-from src.models.user import User
+from src.models.daily_eat import DailyEat
 
 class TestDailyEat(unittest.TestCase):
     def test_session_query_daily_eat_assert_equal_true(self):
