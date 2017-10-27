@@ -58,5 +58,5 @@ def new():
         session.commit()
         return jsonify({"response":"success"})
     except Exception as err:
-        return jsonify({"response":"error", "message":err[0]})
+        return jsonify({"response":"error", "message":str(err)})
    

@@ -11,7 +11,7 @@ class User(Base):
     
     def __init__(self, id, password):
         self.id = id
-        self.id = password
+        self.password = password
 
     def as_dict(self):
         return {
