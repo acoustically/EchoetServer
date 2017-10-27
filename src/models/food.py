@@ -4,7 +4,7 @@ import src.orm as orm
 Base = orm.Base
 
 class Food(Base):
-    __tablename__ = "food"
+    __tablename__ = "foods"
     
     name = Column(String(20), primary_key=True)
     kcal = Column(Integer)
