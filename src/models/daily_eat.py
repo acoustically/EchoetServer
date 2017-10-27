@@ -13,7 +13,7 @@ class DailyEat(Base):
     date = Column(Integer)
     
     def __init__(self, user_id, food, year, month, date):
-        self.id = user_id
+        self.user_id = user_id
         self.food = food
         self.year = year
         self.month = month
@@ -21,6 +21,9 @@ class DailyEat(Base):
 
     def as_dict(self):
         return {
-                    "id" : self.id,
-                    "password" : self.password
+                    "user_id" : self.id,
+                    "food" : self.password
+                    "year" : self.year
+                    "month" : self.month
+                    "date" : self.date
                }
