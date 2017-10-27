@@ -12,28 +12,25 @@ def all():
     return jsonify(daily_eats = list_daily_eats)
 
 @daily_eat.route("/<user_id>")
-def get_user_daily_eat(user_id):
+def get_daily_eat_by_user_id(user_id):
     daily_eats = session.query(DailyEat).filter_by(user_id=user_id).all()
     list_daily_eats = orm.as_list_dict(daily_eats)
     return jsonify(daily_eats = list_daily_eats)
 
 @daily_eat.route("/delete", methods=["POST"])
-def delete_user_daily_eat():
+def delete_daily_eat():
     user_id = request.form.get("user_id")
-    food = request.form.get("food")
+    food_name = request.form.get("food_name")
     year = request.form.get("year")
     month = request.form.get("month")
     date = request.form.get("date")
     
-    daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).first()
-    number_of_daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).count()
-    if number_of_daily_eat == 0:
-        return jsonify({"response":"error", "message":"that daily eat not exist"})
     try:
+        daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).first()
         if daily_eat.count > 1:
-            session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).update(dict(count=daily_eat.count - 1))
+            session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).update(dict(count=daily_eat.count - 1))
         else:
-            daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).first()
+            daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).first()
             session.delete(daily_eat)
         session.commit()
         return jsonify({"response":"success"})
@@ -43,17 +40,17 @@ def delete_user_daily_eat():
 @daily_eat.route("/new", methods=["POST"])
 def new():
     user_id = request.form.get("user_id")
-    food = request.form.get("food")
+    food_name = request.form.get("food_name")
     year = request.form.get("year")
     month = request.form.get("month")
     date = request.form.get("date")
-    number_of_daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).count()
     try:
-        if number_of_daily_eat > 0:
-            daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).first()
-            session.query(DailyEat).filter_by(user_id=user_id, food=food, year=year, month=month, date=date).update(dict(count=daily_eat.count + 1))
+        daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).first()
+        if daily_eat.count > 0:
+            daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).first()
+            session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).update(dict(count=daily_eat.count + 1))
         else:
-            daily_eat = DailyEat(user_id, food, year, month, date)
+            daily_eat = DailyEat(user_id, food_name, year, month, date)
             session.add(daily_eat)
         session.commit()
         return jsonify({"response":"success"})
