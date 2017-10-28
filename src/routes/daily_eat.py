@@ -44,6 +44,33 @@ def new():
     year = request.form.get("year")
     month = request.form.get("month")
     date = request.form.get("date")
+    if add(user_id, food_name, year, month, date):
+        return jsonify({"response":"success"})
+    else:
+        return jsonify({"response":"error", "message":str(err)})
+
+@daily_eat.route("/add", methods=["POST"])
+def add_all():
+    json = request.get_json()
+    daily_eats = json["daily_eats"]
+    print(daily_eats)
+    is_success = True
+    for daily_eat in daily_eats:
+        print(daily_eat)
+        is_success = is_success and add(daily_eat["user_id"], daily_eat["food_name"], daily_eat["year"], daily_eat["month"], daily_eat["date"])
+    if is_success:
+        return jsonify(daily_eats)
+    else:
+        for daily_eat in daily_eats:
+            try:
+                delete_data = session.query(DailyEat).filter_by(user_id=daily_eat["user_id"], food_name=daily_eat["food_name"], year=daily_eat["year"], month=daily_eat["month"], date=daily_eat["date"]).first()
+                session.delete(delete_date)
+            except Exception as err:
+                print(str(err))
+        return jsonify({"response":"error"})
+            
+
+def add(user_id, food_name, year, month, date):
     try:
         daily_eat = session.query(DailyEat).filter_by(user_id=user_id, food_name=food_name, year=year, month=month, date=date).first()
         if daily_eat.count > 0:
@@ -53,8 +80,7 @@ def new():
             daily_eat = DailyEat(user_id, food_name, year, month, date)
             session.add(daily_eat)
         session.commit()
-        return jsonify({"response":"success"})
+        return True
     except Exception as err:
-        return jsonify({"response":"error", "message":str(err)})
- 
-    
+        return False
+
