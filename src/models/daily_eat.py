@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 import src.orm as orm
 
 Base = orm.Base
@@ -7,7 +7,7 @@ class DailyEat(Base):
     __tablename__ = "daily_eats"
     
     user_id = Column(String(20), primary_key=True)
-    food_name = Column(String(50))
+    food_name = Column(String(50), ForeignKey("foods.name"))
     year = Column(Integer)
     month = Column(Integer)
     date = Column(Integer)

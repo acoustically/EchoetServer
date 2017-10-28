@@ -12,6 +12,6 @@ Base = declarative_base()
 def as_list_dict(rows):
     result = []
     for row in rows:
-        result.append(row.as_dict())
+        result.append(row.__dict__)
     return result
 
