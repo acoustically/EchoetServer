@@ -1,8 +1,13 @@
 from flask import Blueprint, jsonify, request
 from src.models.daily_eat import DailyEat
+from src.models.food import Food
 import src.orm as orm
+import datetime
+from src.db_connector import DBConnector
 
 daily_eat = Blueprint("daily_eat", __name__)
+
+connector = DBConnector()
 
 session = orm.session
 @daily_eat.route("/")
@@ -16,6 +21,21 @@ def get_daily_eat_by_user_id(user_id):
     daily_eats = session.query(DailyEat).filter_by(user_id=user_id).all()
     list_daily_eats = orm.as_list_dict(daily_eats)
     return jsonify(daily_eats = list_daily_eats)
+
+@daily_eat.route("/all", methods=["POST"])
+def get_all_by_day():
+    json = request.get_json();
+    print(json)
+    user_id = json["user_id"]
+    year = json["year"]
+    month = json["month"]
+    date = json["date"]
+    
+    sql = "select de.food_name, de.count, f.kcal, f.co2 from daily_eats as de, foods as f where de.user_id='%s' and de.food_name=f.name and de.year=%s and de.month=%s and de.date=%s;" % (user_id, year, month, date);
+    print(sql)
+    result, err = connector.query(sql);
+    print(result)   
+    return jsonify(daily_eats=result)
 
 @daily_eat.route("/delete", methods=["POST"])
 def delete_daily_eat():
@@ -83,4 +103,24 @@ def add(user_id, food_name, year, month, date):
         return True
     except Exception as err:
         return False
+
+@daily_eat.route("/total/<user_id>")
+def total(user_id):
+    time = datetime.datetime.now()
+    sql = "select de.food_name, f.kcal, f.co2, de.count from daily_eats as de, foods as f where de.user_id='%s' and f.name=de.food_name;" % user_id; 
+    results, err = connector.query(sql)
+    kcal = 0
+    co2 = 0
+    for result in results:
+        kcal += result["kcal"] * result["count"]
+        co2 += result["co2"] * result["count"]
+    return jsonify({"total_kcal":kcal, "total_tree":co2, "size":len(results)})
+       
+
+
+
+
+
+
+
 
