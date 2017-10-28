@@ -11,6 +11,9 @@ app.register_blueprint(daily_eat, url_prefix="/daily-eat")
 app.register_blueprint(food, url_prefix="/food")
 app.register_blueprint(user_body, url_prefix="/user-body")
 
+@app.route("/")
+def index():
+    return 
 
 if  __name__ == "__main__":
     app.run(host="0.0.0.0")
