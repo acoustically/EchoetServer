@@ -21,3 +21,4 @@ class Food(Base):
                     "kcal" : self.kcal,
                     "co2" : self.co2,
                }
+    

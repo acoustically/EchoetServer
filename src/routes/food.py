@@ -11,7 +11,6 @@ session = orm.session
 def all():
     foods = session.query(Food).all()
     list_foods = orm.as_list_dict(foods)
-    print(list_foods)
     return jsonify(foods = list_foods)
 
 @food.route("/<name>")
@@ -50,5 +49,6 @@ def daily_eat_foods():
     month = request.form.get("month")
     date = request.form.get("date")
     daily_eat_foods = session.query(Food, DailyEat).filter(DailyEat.food_name == Food.name).filter(DailyEat.user_id==user_id).all()
-    
-    return jsonify(daily_eat_foods = orm.as_list_dict(daily_eat_foods))
+    return jsonify(daily_eat_foods = orm.as_list_dict_join(daily_eat_foods))
+
+
