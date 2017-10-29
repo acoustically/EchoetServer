@@ -73,21 +73,34 @@ def new():
 def add_all():
     json = request.get_json()
     daily_eats = json["daily_eats"]
-    print(daily_eats)
-    is_success = True
+    
     for daily_eat in daily_eats:
-        print(daily_eat)
-        is_success = is_success and add(daily_eat["user_id"], daily_eat["food_name"], daily_eat["year"], daily_eat["month"], daily_eat["date"])
-    if is_success:
-        return jsonify(daily_eats)
-    else:
-        for daily_eat in daily_eats:
-            try:
-                delete_data = session.query(DailyEat).filter_by(user_id=daily_eat["user_id"], food_name=daily_eat["food_name"], year=daily_eat["year"], month=daily_eat["month"], date=daily_eat["date"]).first()
-                session.delete(delete_date)
-            except Exception as err:
-                print(str(err))
-        return jsonify({"response":"error"})
+        user_id = daily_eat["user_id"]
+        food_name = daily_eat["food_name"]
+        year = daily_eat["year"]
+        month = daily_eat["month"]
+        date = daily_eat["date"]
+        print(user_id)
+        print(food_name)
+        print(year)
+        print(month)
+        print(date)
+    
+        sql = "select count from daily_eats where user_id='%s' and food_name='%s' and year='%s' and month='%s' and date='%s';" % (user_id, food_name, year, month, date)
+        result, err = connector.query(sql) 
+        print(result[0]["count"])
+        print("============")
+        if err:
+            if err["errno"] == 1602:
+                sql = "insert into daily_eats(user_id, food_name, year, month, date) values('%s', '%s', '%s', '%s', '%s');" % (user_id, food_name, year, month, date)
+                result, err = connector.query(sql)
+        else:
+            print("testsesaastsat")
+            sql = "update daily_eats set count='%s' where user_id='%s' and food_name='%s' and year='%s' and month='%s' and date='%s';" % ((result[0]["count"] + 1), user_id, food_name, year, month, date)
+            result, err = connector.query(sql)
+
+    return jsonify({"response":"success"})
+
             
 
 def add(user_id, food_name, year, month, date):
